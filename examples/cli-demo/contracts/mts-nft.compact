@@ -1,0 +1,70 @@
+pragma language_version >= 0.14.0;
+
+import CompactStandardLibrary;
+
+// MTS-compliant contract implementation
+
+struct Metadata {
+    name: Bytes<32>;
+    symbol: Maybe<Bytes<10>>;
+    decimals: Maybe<Uint<8>>;
+    description: Maybe<Bytes<256>>;
+    image: Maybe<Bytes<256>>;
+    mediaType: Maybe<Bytes<32>>;
+    // Simplified for current Compact compiler limitations
+    // files and attributes would be handled off-chain via URI
+    version: Uint<16>;
+}
+
+// Common properties
+export ledger project_name: Opaque<"string">;
+export ledger metadata: Map<Bytes<32>, Metadata>;
+export ledger total_supply: Map<Bytes<32>, Uint<128>>;
+export ledger is_programmable: Boolean;
+
+// For token generation
+export ledger nonce_counter: Counter;
+export ledger nonce: Bytes<32>;
+
+constructor(_nonce: Bytes<32>, _project_name: Opaque<"string">) {
+    nonce = _nonce;
+    project_name = _project_name;
+    is_programmable = false; // Non-programmable NFT collection
+}
+
+export circuit mint(
+    name: Bytes<32>,
+    symbol: Maybe<Bytes<10>>,
+    description: Maybe<Bytes<256>>,
+    image: Maybe<Bytes<256>>,
+    mediaType: Maybe<Bytes<32>>
+): Bytes<32> {
+    // Create metadata with MTS v1
+    const token_metadata = Metadata { 
+        name: name,
+        symbol: symbol,
+        decimals: none<Uint<8>>(), // NFTs don't have decimals
+        description: description,
+        image: image,
+        mediaType: mediaType,
+        version: 1 as Uint<16> // MTS v1
+    };
+
+    // Mint the token
+    const coin_info = mint_token(
+        nonce, 
+        1 as Uint<128>, 
+        nonce, 
+        left<ZswapCoinPublicKey, ContractAddress>(own_public_key())
+    );
+    
+    // Store metadata and update supply
+    metadata.insert(coin_info.color, token_metadata);
+    total_supply.insert(coin_info.color, 1);
+    
+    // Update nonce for next mint
+    nonce = evolve_nonce(nonce_counter, nonce);
+    nonce_counter.increment(1);
+    
+    return coin_info.color;
+}
