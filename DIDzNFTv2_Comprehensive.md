@@ -1,4 +1,10 @@
 Proposal: DIDzNFT v2 — A Modular, Hierarchical NFT Standard for Midnight
+here is a living doc that I created to outline the DIDzNFT v2 standard
+https://docs.google.com/document/d/1HClwSDhUsW17x7GyFdFxie02KJEIYlX_O0zrDYByQtg/edit?usp=sharing
+
+Please feel free to contact me on X @realjohnsanti or johnny5i@proton.me for email, or @johnny5i on discord
+
+
 Overview:
 The DIDzNFT v2 standard builds on the foundations of the Midnight Token Standard (MTS), extending its capabilities to support modularity, composability, role delegation, expiration, and selective privacy. This enhanced standard is purpose-built to power applications such as MidnightForge, ProMingle, DownMan, and SilentLedger, enabling dynamic, privacy-preserving NFTs that adapt to real-world needs.
 🧠 Analogy:
